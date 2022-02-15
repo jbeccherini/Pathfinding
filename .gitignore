@@ -1,0 +1,12 @@
+# Ignore everything:
+
+Library/
+Logs/
+Packages/
+*/Builds
+
+# allow Assets and ProjectSettings
+
+!*/Assets/
+!*/ProjectSettings/
+!.gitignore
