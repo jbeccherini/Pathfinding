@@ -7,6 +7,7 @@ TagManager:
   - Tile
   - Room
   - AllowGrid
+  - Cluster
   layers:
   - Default
   - TransparentFX

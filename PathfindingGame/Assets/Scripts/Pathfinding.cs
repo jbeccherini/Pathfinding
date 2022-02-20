@@ -1,11 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Pathfinding : MonoBehaviour
 {
-    private GameObject startNode;
-    private GameObject goalNode;
+    public GameObject startNode;
+    public GameObject goalNode;
     private List<NodeConnection> OpenList;
     private List<NodeConnection> ClosedList;
 
@@ -13,50 +14,61 @@ public class Pathfinding : MonoBehaviour
     public Material GoalMaterial;
     public Material ClosedMaterial;
     public Material OpenMaterial;
+    public Material PathMaterial;
 
+    private bool finishedExecution;
 
+    public static bool nodesFound = false;
+
+    public int start;
+    public int goal;
+
+    public float timeDelay = 0.1f;
+
+    public bool useManhatten = false;
+
+    private List<int> clusterPathIds = new List<int>();
+    
     // Start is called before the first frame update
     void Start()
     {
-        startNode = GameObject.Find("tile421");
-        goalNode = GameObject.Find("tile257");
-    }
+        //startNode = GameObject.Find("tile"+start.ToString());
+        //goalNode = GameObject.Find("tile"+goal.ToString());
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (CreateTileMap.doneLoading)
-        {
-            CreateTileMap.doneLoading = false;
+        int startTile = UnityEngine.Random.Range(0, 430);
+        int goalTile = (int)((startTile + 200) % 430);
 
-            List<GameObject> gameObjects = FindShortestPath(startNode, goalNode);
-        }
-    }
+        startNode = GameObject.Find("tile"+startTile.ToString());
+        goalNode = GameObject.Find("tile"+goalTile.ToString());
+        nodesFound = true;
 
 
-    public List<GameObject> FindShortestPath(GameObject startNode, GameObject goalNode)
-    {
-        startNode.GetComponent<MeshRenderer>().material = StartMaterial;
-        goalNode.GetComponent<MeshRenderer>().material = GoalMaterial;
-
+        SetMaterial(startNode, StartMaterial);
+        SetMaterial(goalNode, GoalMaterial);
 
         OpenList = new List<NodeConnection>();
         ClosedList = new List<NodeConnection>();
-        bool finishedExecution = false;
-        int count = 0;
+
+        StartCoroutine(FindShortestPath(timeDelay));
+    }
+
+    IEnumerator FindShortestPath(float delay)
+    {
+        while (!CreateTileMap.doneLoading) 
+        { }
 
         NodeConnection connection = new NodeConnection(startNode, GetHeuristic(startNode, goalNode), 0, null);
 
         OpenList.Add(connection);
 
-        while (true)
+        while (!finishedExecution)
         {
             NodeConnection currentNode = GetLowestEstimatedCost();
 
             foreach (var tileConnection in currentNode.node.GetComponent<TileController>().connections)
             {
                 GameObject node = tileConnection.node;
-                NodeConnection nodeConnection = new NodeConnection(node, GetHeuristic(node, goalNode), connection.costSoFar + tileConnection.cost, null);
+                NodeConnection nodeConnection = new NodeConnection(node, GetHeuristic(node, goalNode, useManhatten), currentNode.costSoFar + tileConnection.cost, currentNode);
                 AddOrUpdateNode(nodeConnection);
                 if (nodeConnection.node == goalNode)
                 {
@@ -69,17 +81,33 @@ public class Pathfinding : MonoBehaviour
 
             if (currentNode.node != goalNode && currentNode.node != startNode)
             {
-                currentNode.node.gameObject.GetComponent<MeshRenderer>().material = ClosedMaterial;
+                SetMaterial(currentNode.node, ClosedMaterial);
             }
 
-            if (finishedExecution)
+            yield return new WaitForSeconds(delay);
+        }
+
+        foreach (var nodeConnection in OpenList)
+        {
+            if (nodeConnection.node == goalNode)
             {
+                connection = nodeConnection;
                 break;
             }
         }
 
-        return null;
+        while (connection.connection != null) 
+        {
+            //connection.node.GetComponent<TileController>().DrawRay(connection.connection.node);
+            connection = connection.connection;
+            SetMaterial(connection.node, PathMaterial);
+            yield return new WaitForSeconds(delay);
+        }
+
+        yield return null;
     }
+
+    
 
     public float GetHeuristic(GameObject startNode, GameObject goalNode, bool UseManhattan = true)
     {
@@ -89,7 +117,28 @@ public class Pathfinding : MonoBehaviour
             float yDelta = Mathf.Abs(goalNode.transform.position.z - startNode.transform.position.z);
             return xDelta + yDelta;
         }
+        else 
+        {
+            float xDelta = Mathf.Abs(goalNode.transform.position.x - startNode.transform.position.x);
+            float yDelta = Mathf.Abs(goalNode.transform.position.z - startNode.transform.position.z);
 
+
+            if (clusterPathIds.Count == 0) 
+            {
+                clusterPathIds = this.GetComponent<ClusterPathfinding>().FindShortestClusterPathIds();
+            }
+
+            if (clusterPathIds.Contains(startNode.GetComponent<TileController>().clusterID))
+            {
+                return xDelta + yDelta;
+            }
+            else 
+            {
+            
+            }
+
+            return xDelta + yDelta + 1000000;
+        }
 
         return 0;
     }
@@ -122,7 +171,12 @@ public class Pathfinding : MonoBehaviour
         {
             if (nodeConnection.node == node.node)
             {
-                //IMPLEMENT REOPENING AND UPDATING CLOSED NODES
+                if (node.costSoFar < nodeConnection.costSoFar) 
+                {
+                    ClosedList.Remove(nodeConnection);
+                    AddOrUpdateNode(node);
+                }
+
                 return;
             }
         }
@@ -141,12 +195,15 @@ public class Pathfinding : MonoBehaviour
         OpenList.Add(node);
         if (node.node != goalNode && node.node != startNode) 
         {
-            node.node.gameObject.GetComponent<MeshRenderer>().material = OpenMaterial;
+            SetMaterial(node.node.gameObject, OpenMaterial);
         }
-        
-        
     }
 
+    private void SetMaterial(GameObject tile, Material material) 
+    {
+        tile.GetComponent<MeshRenderer>().material = material;
+        return;
+    }
 }
 
 public class NodeConnection
@@ -154,10 +211,10 @@ public class NodeConnection
     public GameObject node { get; set; }
     public float heuristic { get; set; }
     public float costSoFar { get; set; }
-    public ConnectionPair connection { get; set; }
+    public NodeConnection connection { get; set; }
     public float estimatedTotalCost { get; set; }
 
-    public NodeConnection(GameObject node, float heuristic, float costSoFar, ConnectionPair connection)
+    public NodeConnection(GameObject node, float heuristic, float costSoFar, NodeConnection connection)
     {
         this.node = node;
         this.heuristic = heuristic;
@@ -170,7 +227,6 @@ public class NodeConnection
     {
         return node.name + " " + heuristic + " " + costSoFar + " " + connection.ToString() + " " + estimatedTotalCost;
     }
-
 }
 
 public class ConnectionPair
@@ -184,10 +240,8 @@ public class ConnectionPair
         this.node2 = node2;
     }
 
-
     public override string ToString()
     {
         return node1.name + " " + node2.name;
     }
-
 }

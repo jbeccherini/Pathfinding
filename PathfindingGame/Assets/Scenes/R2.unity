@@ -225,6 +225,7 @@ MonoBehaviour:
   start: 12
   goal: 287
   timeDelay: 0.025
+  useManhatten: 0
 --- !u!4 &170371880
 Transform:
   m_ObjectHideFlags: 0

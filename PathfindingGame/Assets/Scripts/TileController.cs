@@ -9,15 +9,13 @@ public class TileController : MonoBehaviour
 
     private float distance = CreateTileMap.space;
 
+    public int clusterID;
+
+    [SerializeField] public GameObject center;
+
     // Start is called before the first frame update
     void Start()
     {
-        if (Physics.CheckSphere(this.transform.position + new Vector3(0, 0.1f, 0), 0.03f)) 
-        {
-            //Destroy(this.gameObject);
-            
-        }
-
         if (connections == null) 
         {
             InstantiateConnectionList();
@@ -60,16 +58,15 @@ public class TileController : MonoBehaviour
                 }
             }
         }
+    }
 
-        if (this.gameObject.name.Equals("tile77")) 
-        {
-            foreach (var connection in connections)
-            {
-                Debug.Log(connection.ToString());
-            }
-            debug = false;
-        }
+    public void DrawRay(GameObject connection)
+    {
+        var startPos = center.transform.position;
+        var endPos = connection.GetComponent<TileController>().center.transform.position;
+        var direction = (endPos - startPos).normalized;
 
+        Debug.DrawRay(startPos, direction, Color.white, (endPos - startPos).magnitude);
     }
 }
 
