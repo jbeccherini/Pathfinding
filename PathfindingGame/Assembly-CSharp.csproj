@@ -57,8 +57,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\CreateTileMap.cs" />
+    <Compile Include="Assets\Scripts\WizardController.cs" />
     <Compile Include="Assets\Scripts\TileController.cs" />
     <Compile Include="Assets\Scripts\ClusterPathfinding.cs" />
+    <Compile Include="Assets\Scripts\mouse.cs" />
     <Compile Include="Assets\Scripts\Pathfinding.cs" />
   </ItemGroup>
   <ItemGroup>

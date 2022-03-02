@@ -41,66 +41,66 @@ public class ClusterPathfinding : MonoBehaviour
         PathList = new List<ClusterConnection>();
     }
 
-    IEnumerator FindShortestClusterPath()
-    {
-        //while (!Pathfinding.nodesFound) { }
+    //IEnumerator FindShortestClusterPath()
+    //{
+    //    //while (!Pathfinding.nodesFound) { }
 
-        while (!CreateTileMap.doneLoading) { }// || !Pathfinding.nodesFound) { }
+    //    while (!CreateTileMap.doneLoading) { }// || !Pathfinding.nodesFound) { }
 
-        startNode = gameObject.GetComponent<Pathfinding>().startNode;
-        goalNode = gameObject.GetComponent<Pathfinding>().goalNode;
-        startClusterId = startNode.GetComponent<TileController>().clusterID;
-        goalClusterId = goalNode.GetComponent<TileController>().clusterID;
+    //    startNode = gameObject.GetComponent<Pathfinding>().startNode;
+    //    goalNode = gameObject.GetComponent<Pathfinding>().goalNode;
+    //    startClusterId = startNode.GetComponent<TileController>().clusterID;
+    //    goalClusterId = goalNode.GetComponent<TileController>().clusterID;
 
-        ClusterConnection connection = new ClusterConnection(startClusterId, 0, null);
+    //    ClusterConnection connection = new ClusterConnection(startClusterId, 0, null);
 
-        OpenList.Add(connection);
+    //    OpenList.Add(connection);
 
-        while (!finishedExecution)
-        {
-            ClusterConnection currentCluster = GetLowestCost();
-            for (int i = 0; i <= maxClusterID; i++)
-            {
-                int cost = GetCost(currentCluster.clusterID, i);
-                if (cost != -1)
-                {
-                    ClusterConnection clusterConnection = new ClusterConnection(i, currentCluster.costSoFar + cost, currentCluster);
-                    AddOrUpdateCluster(clusterConnection);
-                    if (clusterConnection.clusterID == goalClusterId)
-                    {
-                        finishedExecution = true;
-                    }
-                }
-            }
+    //    while (!finishedExecution)
+    //    {
+    //        ClusterConnection currentCluster = GetLowestCost();
+    //        for (int i = 0; i <= maxClusterID; i++)
+    //        {
+    //            int cost = GetCost(currentCluster.clusterID, i);
+    //            if (cost != -1)
+    //            {
+    //                ClusterConnection clusterConnection = new ClusterConnection(i, currentCluster.costSoFar + cost, currentCluster);
+    //                AddOrUpdateCluster(clusterConnection);
+    //                if (clusterConnection.clusterID == goalClusterId)
+    //                {
+    //                    finishedExecution = true;
+    //                }
+    //            }
+    //        }
 
-            OpenList.Remove(currentCluster);
-            ClosedList.Add(currentCluster);
-        }
+    //        OpenList.Remove(currentCluster);
+    //        ClosedList.Add(currentCluster);
+    //    }
 
-        foreach (var clusterConnection in OpenList)
-        {
-            if (clusterConnection.clusterID == goalClusterId)
-            {
-                connection = clusterConnection;
-                break;
-            }
-        }
-        PathList.Add(connection);
+    //    foreach (var clusterConnection in OpenList)
+    //    {
+    //        if (clusterConnection.clusterID == goalClusterId)
+    //        {
+    //            connection = clusterConnection;
+    //            break;
+    //        }
+    //    }
+    //    PathList.Add(connection);
 
-        while (connection.connection != null)
-        {
-            connection = connection.connection;
-            PathList.Add(connection);
-        }
+    //    while (connection.connection != null)
+    //    {
+    //        connection = connection.connection;
+    //        PathList.Add(connection);
+    //    }
 
-        foreach (var item in PathList)
-        {
-            Debug.Log(item.ToString());
-        }
+    //    foreach (var item in PathList)
+    //    {
+    //        Debug.Log(item.ToString());
+    //    }
 
-        doneExecuting = true;
-        yield return null;
-    }
+    //    doneExecuting = true;
+    //    yield return null;
+    //}
     
     public List<int> FindShortestClusterPathIds()
     {
@@ -233,15 +233,15 @@ public class ClusterPathfinding : MonoBehaviour
         int clusterid1 = Mathf.Min(cluster1, cluster2);
         int clusterid2 = Mathf.Max(cluster1, cluster2);
 
-        if (clusterid1 == 0 && clusterid2 == 1) { return 12; }
-        else if (clusterid1 == 0 && clusterid2 == 7) { return 23; }
-        else if (clusterid1 == 1 && clusterid2 == 2) { return 8; }
+        if (clusterid1 == 0 && clusterid2 == 1) { return 8; }
+        else if (clusterid1 == 0 && clusterid2 == 7) { return 14; }
+        else if (clusterid1 == 1 && clusterid2 == 2) { return 5; } //only path
         else if (clusterid1 == 1 && clusterid2 == 3) { return 10; }
         else if (clusterid1 == 3 && clusterid2 == 4) { return 9; }
-        else if (clusterid1 == 4 && clusterid2 == 5) { return 8; }
+        else if (clusterid1 == 4 && clusterid2 == 5) { return 5; } //only path
         else if (clusterid1 == 4 && clusterid2 == 6) { return 6; }
         else if (clusterid1 == 6 && clusterid2 == 7) { return 9; }
-        else if (clusterid1 == 7 && clusterid2 == 8) { return 14; }
+        else if (clusterid1 == 7 && clusterid2 == 8) { return 5; } //only path
         else { return -1; }
     }
 }

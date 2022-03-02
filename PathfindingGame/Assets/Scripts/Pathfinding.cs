@@ -9,12 +9,14 @@ public class Pathfinding : MonoBehaviour
     public GameObject goalNode;
     private List<NodeConnection> OpenList;
     private List<NodeConnection> ClosedList;
+    public List<NodeConnection> PathList;
 
     public Material StartMaterial;
     public Material GoalMaterial;
     public Material ClosedMaterial;
     public Material OpenMaterial;
     public Material PathMaterial;
+    public Material DefaultMaterial;
 
     private bool finishedExecution;
 
@@ -28,28 +30,59 @@ public class Pathfinding : MonoBehaviour
     public bool useManhatten = false;
 
     private List<int> clusterPathIds = new List<int>();
+
+    public static bool pathFound = false;
     
     // Start is called before the first frame update
     void Start()
     {
-        //startNode = GameObject.Find("tile"+start.ToString());
-        //goalNode = GameObject.Find("tile"+goal.ToString());
+        StartCoroutine(SetUp());
+    }
 
-        int startTile = UnityEngine.Random.Range(0, 430);
-        int goalTile = (int)((startTile + 200) % 430);
+    public IEnumerator SetUp(String tileName = "") 
+    {
+        clusterPathIds = new List<int>();
 
-        startNode = GameObject.Find("tile"+startTile.ToString());
-        goalNode = GameObject.Find("tile"+goalTile.ToString());
+        GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
+
+        foreach (GameObject tile in tiles) 
+        {
+            SetMaterial(tile, DefaultMaterial);
+        }
+
+        List<int> smallClusterIds = new List<int>();
+        smallClusterIds.Add(2);
+        smallClusterIds.Add(5);
+        smallClusterIds.Add(8);
+
+        smallClusterIds.Remove(startNode.GetComponent<TileController>().clusterID);
+
+        int goalIndex;
+
+        if (tileName == "")
+        {
+            do
+            {
+                goalIndex = UnityEngine.Random.Range(0, 434);
+                goalNode = GameObject.Find("tile" + goalIndex.ToString());
+            } while (!smallClusterIds.Contains(goalNode.gameObject.GetComponent<TileController>().clusterID));
+        }
+        else 
+        {
+            goalNode = GameObject.Find(tileName);
+        }
+
         nodesFound = true;
-
 
         SetMaterial(startNode, StartMaterial);
         SetMaterial(goalNode, GoalMaterial);
 
         OpenList = new List<NodeConnection>();
         ClosedList = new List<NodeConnection>();
+        PathList = new List<NodeConnection>();
 
         StartCoroutine(FindShortestPath(timeDelay));
+        yield return null;
     }
 
     IEnumerator FindShortestPath(float delay)
@@ -57,9 +90,13 @@ public class Pathfinding : MonoBehaviour
         while (!CreateTileMap.doneLoading) 
         { }
 
+        while (startNode == null) { }
+
         NodeConnection connection = new NodeConnection(startNode, GetHeuristic(startNode, goalNode), 0, null);
 
         OpenList.Add(connection);
+
+        finishedExecution = false;
 
         while (!finishedExecution)
         {
@@ -73,6 +110,7 @@ public class Pathfinding : MonoBehaviour
                 if (nodeConnection.node == goalNode)
                 {
                     finishedExecution = true;
+                    break;
                 }
             }
 
@@ -98,11 +136,22 @@ public class Pathfinding : MonoBehaviour
 
         while (connection.connection != null) 
         {
+            PathList.Add(connection);
             //connection.node.GetComponent<TileController>().DrawRay(connection.connection.node);
             connection = connection.connection;
+            if (connection.node == startNode) 
+            {
+                break;
+            }
             SetMaterial(connection.node, PathMaterial);
             yield return new WaitForSeconds(delay);
         }
+
+        PathList.Reverse();
+
+        pathFound = true;
+
+        startNode = null;
 
         yield return null;
     }
@@ -204,6 +253,18 @@ public class Pathfinding : MonoBehaviour
         tile.GetComponent<MeshRenderer>().material = material;
         return;
     }
+
+    public List<NodeConnection> GetPath() 
+    {
+        return PathList;
+    }
+
+    public void SetStart(String tileName) 
+    {
+        startNode = GameObject.Find(tileName);
+        return;
+    }
+
 }
 
 public class NodeConnection
