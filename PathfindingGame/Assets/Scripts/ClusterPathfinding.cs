@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,7 +35,7 @@ public class ClusterPathfinding : MonoBehaviour
         //StartCoroutine(FindShortestClusterPath());
     }
 
-    private void Setup()
+    public void Setup()
     {
         OpenList = new List<ClusterConnection>();
         ClosedList = new List<ClusterConnection>();
@@ -110,8 +111,9 @@ public class ClusterPathfinding : MonoBehaviour
         goalClusterId = goalNode.GetComponent<TileController>().clusterID;
 
         ClusterConnection connection = new ClusterConnection(startClusterId, 0, null);
+        finishedExecution2 = false;
 
-        if(OpenList == null) 
+        if(OpenList == null || OpenList.Count == 0) 
         {
             Setup();
         }

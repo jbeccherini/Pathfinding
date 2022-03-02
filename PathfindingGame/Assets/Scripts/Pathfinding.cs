@@ -153,6 +153,8 @@ public class Pathfinding : MonoBehaviour
 
         startNode = null;
 
+        this.gameObject.GetComponent<ClusterPathfinding>().Setup();
+
         yield return null;
     }
 
