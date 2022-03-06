@@ -91,23 +91,13 @@ public class WizardController : MonoBehaviour
 
         foreach (var node in path)
         {
-            //if (nodeCounter % 2 == 1 && nodeCounter+1 != path.Count) { nodeCounter++;  continue; }
             Vector3 movement;
             Vector3 target = node.node.transform.position;
             while((target - transform.position).magnitude > arriveRadius) 
             {
-                //if (node == path[path.Count - 1])
-                //{
-                //    movement = KinematicArrive(node.node.transform);
-                //}
-                //else 
-                //{
-                    movement = KinematicSeek(node.node.transform);
-                //}
+                movement = KinematicSeek(node.node.transform);
 
-                 transform.Translate(movement);
-
-                //yield return new WaitForSeconds(delay);
+                transform.Translate(movement);
                 yield return null;
             }
             nodeCounter++;

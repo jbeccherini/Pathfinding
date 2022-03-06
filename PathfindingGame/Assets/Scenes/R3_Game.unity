@@ -225,8 +225,9 @@ MonoBehaviour:
   DefaultMaterial: {fileID: 2100000, guid: 43fd09fc08e7cf4499c12e94b358bade, type: 2}
   start: 12
   goal: 287
-  timeDelay: 0
+  timeDelay: 0.025
   useManhatten: 0
+  isR2: 0
 --- !u!4 &170371880
 Transform:
   m_ObjectHideFlags: 0

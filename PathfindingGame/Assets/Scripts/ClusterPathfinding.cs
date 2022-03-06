@@ -30,9 +30,6 @@ public class ClusterPathfinding : MonoBehaviour
         {
             Setup();
         }
-        
-
-        //StartCoroutine(FindShortestClusterPath());
     }
 
     public void Setup()
@@ -41,67 +38,6 @@ public class ClusterPathfinding : MonoBehaviour
         ClosedList = new List<ClusterConnection>();
         PathList = new List<ClusterConnection>();
     }
-
-    //IEnumerator FindShortestClusterPath()
-    //{
-    //    //while (!Pathfinding.nodesFound) { }
-
-    //    while (!CreateTileMap.doneLoading) { }// || !Pathfinding.nodesFound) { }
-
-    //    startNode = gameObject.GetComponent<Pathfinding>().startNode;
-    //    goalNode = gameObject.GetComponent<Pathfinding>().goalNode;
-    //    startClusterId = startNode.GetComponent<TileController>().clusterID;
-    //    goalClusterId = goalNode.GetComponent<TileController>().clusterID;
-
-    //    ClusterConnection connection = new ClusterConnection(startClusterId, 0, null);
-
-    //    OpenList.Add(connection);
-
-    //    while (!finishedExecution)
-    //    {
-    //        ClusterConnection currentCluster = GetLowestCost();
-    //        for (int i = 0; i <= maxClusterID; i++)
-    //        {
-    //            int cost = GetCost(currentCluster.clusterID, i);
-    //            if (cost != -1)
-    //            {
-    //                ClusterConnection clusterConnection = new ClusterConnection(i, currentCluster.costSoFar + cost, currentCluster);
-    //                AddOrUpdateCluster(clusterConnection);
-    //                if (clusterConnection.clusterID == goalClusterId)
-    //                {
-    //                    finishedExecution = true;
-    //                }
-    //            }
-    //        }
-
-    //        OpenList.Remove(currentCluster);
-    //        ClosedList.Add(currentCluster);
-    //    }
-
-    //    foreach (var clusterConnection in OpenList)
-    //    {
-    //        if (clusterConnection.clusterID == goalClusterId)
-    //        {
-    //            connection = clusterConnection;
-    //            break;
-    //        }
-    //    }
-    //    PathList.Add(connection);
-
-    //    while (connection.connection != null)
-    //    {
-    //        connection = connection.connection;
-    //        PathList.Add(connection);
-    //    }
-
-    //    foreach (var item in PathList)
-    //    {
-    //        Debug.Log(item.ToString());
-    //    }
-
-    //    doneExecuting = true;
-    //    yield return null;
-    //}
     
     public List<int> FindShortestClusterPathIds()
     {

@@ -222,10 +222,12 @@ MonoBehaviour:
   ClosedMaterial: {fileID: 2100000, guid: 8a7da34291506f74ab897ad09dc274c1, type: 2}
   OpenMaterial: {fileID: 2100000, guid: b0176a50c0906994d86e91da890f4e1f, type: 2}
   PathMaterial: {fileID: 2100000, guid: 016c8e4f2496e0343a25833f8c543c55, type: 2}
-  start: 12
-  goal: 287
-  timeDelay: 0.025
+  DefaultMaterial: {fileID: 0}
+  start: 15
+  goal: 372
+  timeDelay: 0.01
   useManhatten: 0
+  isR2: 1
 --- !u!4 &170371880
 Transform:
   m_ObjectHideFlags: 0

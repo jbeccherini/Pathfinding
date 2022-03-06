@@ -63,10 +63,4 @@ public class CreateTileMap : MonoBehaviour
         
         doneLoading = true;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

@@ -32,44 +32,55 @@ public class Pathfinding : MonoBehaviour
     private List<int> clusterPathIds = new List<int>();
 
     public static bool pathFound = false;
+
+    public bool isR2 = false;
     
     // Start is called before the first frame update
     void Start()
     {
+        if (isR2) 
+        {
+            startNode = GameObject.Find("tile" + start);
+            goalNode = GameObject.Find("tile" + goal);
+        }
+
         StartCoroutine(SetUp());
     }
 
     public IEnumerator SetUp(String tileName = "") 
     {
-        clusterPathIds = new List<int>();
-
-        GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
-
-        foreach (GameObject tile in tiles) 
+        if (!isR2) 
         {
-            SetMaterial(tile, DefaultMaterial);
-        }
+            clusterPathIds = new List<int>();
 
-        List<int> smallClusterIds = new List<int>();
-        smallClusterIds.Add(2);
-        smallClusterIds.Add(5);
-        smallClusterIds.Add(8);
+            GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
 
-        smallClusterIds.Remove(startNode.GetComponent<TileController>().clusterID);
-
-        int goalIndex;
-
-        if (tileName == "")
-        {
-            do
+            foreach (GameObject tile in tiles)
             {
-                goalIndex = UnityEngine.Random.Range(0, 434);
-                goalNode = GameObject.Find("tile" + goalIndex.ToString());
-            } while (!smallClusterIds.Contains(goalNode.gameObject.GetComponent<TileController>().clusterID));
-        }
-        else 
-        {
-            goalNode = GameObject.Find(tileName);
+                SetMaterial(tile, DefaultMaterial);
+            }
+
+            List<int> smallClusterIds = new List<int>();
+            smallClusterIds.Add(2);
+            smallClusterIds.Add(5);
+            smallClusterIds.Add(8);
+
+            smallClusterIds.Remove(startNode.GetComponent<TileController>().clusterID);
+
+            int goalIndex;
+
+            if (tileName == "")
+            {
+                do
+                {
+                    goalIndex = UnityEngine.Random.Range(0, 434);
+                    goalNode = GameObject.Find("tile" + goalIndex.ToString());
+                } while (!smallClusterIds.Contains(goalNode.gameObject.GetComponent<TileController>().clusterID));
+            }
+            else
+            {
+                goalNode = GameObject.Find(tileName);
+            }
         }
 
         nodesFound = true;
@@ -137,7 +148,6 @@ public class Pathfinding : MonoBehaviour
         while (connection.connection != null) 
         {
             PathList.Add(connection);
-            //connection.node.GetComponent<TileController>().DrawRay(connection.connection.node);
             connection = connection.connection;
             if (connection.node == startNode) 
             {
